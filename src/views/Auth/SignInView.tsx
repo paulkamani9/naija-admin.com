@@ -30,13 +30,13 @@ export const SignInView = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const router = useRouter();
-    const { data: session, isPending } = authClient.useSession();
-  
-    useEffect(() => {
-      if (!isPending && session) {
-        router.push("/");
-      }
-    }, [isPending, session, router]);
+  const { data: session, isPending } = authClient.useSession();
+
+  useEffect(() => {
+    if (!isPending && session) {
+      router.push("/");
+    }
+  }, [isPending, session, router]);
 
   const form = useForm<z.infer<typeof signInSchema>>({
     resolver: zodResolver(signInSchema),
@@ -54,7 +54,7 @@ export const SignInView = () => {
       {
         email: data.email,
         password: data.password,
-        callbackURL:"/"
+        callbackURL: "/",
       },
       {
         onSuccess: () => {
@@ -85,26 +85,33 @@ export const SignInView = () => {
           </motion.div>
           <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20">
             <ShieldCheckIcon className="w-4 h-4 text-primary" />
-            <span className="text-xs font-medium text-primary">Admin Portal</span>
+            <span className="text-xs font-medium text-primary">
+              Admin Portal
+            </span>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 md:p-8 pt-4">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="p-6 md:p-8 pt-4"
+            >
               <div className="flex flex-col gap-6">
-                <motion.div 
+                <motion.div
                   className="flex flex-col items-center text-center space-y-2"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.2 }}
                 >
-                  <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
+                  <h1 className="text-2xl font-bold tracking-tight">
+                    Welcome back
+                  </h1>
                   <p className="text-muted-foreground text-sm text-balance">
                     Sign in to access your admin dashboard
                   </p>
                 </motion.div>
-                
-                <motion.div 
+
+                <motion.div
                   className="space-y-4"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -115,7 +122,9 @@ export const SignInView = () => {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-medium">Email Address</FormLabel>
+                        <FormLabel className="text-sm font-medium">
+                          Email Address
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="email"
@@ -128,13 +137,15 @@ export const SignInView = () => {
                       </FormItem>
                     )}
                   />
-                  
+
                   <FormField
                     control={form.control}
                     name="password"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-medium">Password</FormLabel>
+                        <FormLabel className="text-sm font-medium">
+                          Password
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="password"
@@ -167,8 +178,8 @@ export const SignInView = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.4 }}
                 >
-                  <Button 
-                    disabled={isLoading} 
+                  <Button
+                    disabled={isLoading}
                     className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-medium shadow-md hover:shadow-lg transition-all duration-200"
                     type="submit"
                   >
@@ -195,7 +206,7 @@ export const SignInView = () => {
                   <SocialButtons isLoading={isLoading} />
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                   className="text-center"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}

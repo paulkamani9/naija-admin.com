@@ -10,10 +10,7 @@ interface SocialButtonsProps {
 
 const SocialButtons = ({ isLoading }: SocialButtonsProps) => {
   return (
-    <motion.div
-      whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.99 }}
-    >
+    <motion.div whileHover={{ scale: 1.01 }} whileTap={{ scale: 0.99 }}>
       <Button
         disabled={isLoading}
         variant="outline"

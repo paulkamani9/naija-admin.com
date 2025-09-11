@@ -88,26 +88,33 @@ export const SignUpView = () => {
           </motion.div>
           <div className="flex items-center gap-2 px-3 py-1.5 bg-primary/10 rounded-full border border-primary/20">
             <UserPlusIcon className="w-4 h-4 text-primary" />
-            <span className="text-xs font-medium text-primary">Create Account</span>
+            <span className="text-xs font-medium text-primary">
+              Create Account
+            </span>
           </div>
         </CardHeader>
         <CardContent className="pt-0">
           <Form {...form}>
-            <form onSubmit={form.handleSubmit(onSubmit)} className="p-6 md:p-8 pt-4">
+            <form
+              onSubmit={form.handleSubmit(onSubmit)}
+              className="p-6 md:p-8 pt-4"
+            >
               <div className="flex flex-col gap-6">
-                <motion.div 
+                <motion.div
                   className="flex flex-col items-center text-center space-y-2"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.2 }}
                 >
-                  <h1 className="text-2xl font-bold tracking-tight">Join our team</h1>
+                  <h1 className="text-2xl font-bold tracking-tight">
+                    Join our team
+                  </h1>
                   <p className="text-muted-foreground text-sm text-balance">
                     Create your admin account to get started
                   </p>
                 </motion.div>
-                
-                <motion.div 
+
+                <motion.div
                   className="space-y-4"
                   initial={{ opacity: 0, y: 10 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -118,7 +125,9 @@ export const SignUpView = () => {
                     name="name"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-medium">Full Name</FormLabel>
+                        <FormLabel className="text-sm font-medium">
+                          Full Name
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="text"
@@ -137,7 +146,9 @@ export const SignUpView = () => {
                     name="email"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel className="text-sm font-medium">Email Address</FormLabel>
+                        <FormLabel className="text-sm font-medium">
+                          Email Address
+                        </FormLabel>
                         <FormControl>
                           <Input
                             type="email"
@@ -150,14 +161,16 @@ export const SignUpView = () => {
                       </FormItem>
                     )}
                   />
-                  
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <FormField
                       control={form.control}
                       name="password"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium">Password</FormLabel>
+                          <FormLabel className="text-sm font-medium">
+                            Password
+                          </FormLabel>
                           <FormControl>
                             <Input
                               type="password"
@@ -176,7 +189,9 @@ export const SignUpView = () => {
                       name="confirmPassword"
                       render={({ field }) => (
                         <FormItem>
-                          <FormLabel className="text-sm font-medium">Confirm Password</FormLabel>
+                          <FormLabel className="text-sm font-medium">
+                            Confirm Password
+                          </FormLabel>
                           <FormControl>
                             <Input
                               type="password"
@@ -210,9 +225,9 @@ export const SignUpView = () => {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 0.4, delay: 0.4 }}
                 >
-                  <Button 
-                    type="submit" 
-                    disabled={isLoading} 
+                  <Button
+                    type="submit"
+                    disabled={isLoading}
                     className="w-full h-11 bg-primary hover:bg-primary/90 text-primary-foreground font-medium shadow-md hover:shadow-lg transition-all duration-200"
                   >
                     {isLoading ? "Creating account..." : "Create Account"}
@@ -238,7 +253,7 @@ export const SignUpView = () => {
                   <SocialButtons isLoading={isLoading} />
                 </motion.div>
 
-                <motion.div 
+                <motion.div
                   className="text-center"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}

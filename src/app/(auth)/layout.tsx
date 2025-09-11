@@ -13,12 +13,12 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_30%_20%,rgba(120,219,226,0.1)_0%,transparent_50%)] dark:bg-[radial-gradient(circle_at_30%_20%,rgba(120,219,226,0.05)_0%,transparent_50%)]" />
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_70%_80%,rgba(34,197,94,0.1)_0%,transparent_50%)] dark:bg-[radial-gradient(circle_at_70%_80%,rgba(34,197,94,0.05)_0%,transparent_50%)]" />
       </div>
-      
+
       <AuthHero />
-      
+
       <div className="flex flex-col gap-6 items-center justify-center p-6 pb-10 md:p-8 relative">
         {/* Content container with animation */}
-        <motion.div 
+        <motion.div
           className="w-full max-w-md"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -26,9 +26,9 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
         >
           {children}
         </motion.div>
-        
+
         {/* Footer links */}
-        <motion.div 
+        <motion.div
           className="text-muted-foreground text-center text-xs text-balance max-w-sm"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -36,15 +36,15 @@ const AuthLayout = ({ children }: { children: React.ReactNode }) => {
         >
           <p>
             By continuing, you agree to our{" "}
-            <a 
-              href="/terms" 
+            <a
+              href="/terms"
               className="underline underline-offset-4 hover:text-primary transition-colors duration-200 font-medium"
             >
               Terms and Conditions
             </a>{" "}
             and{" "}
-            <a 
-              href="/privacy" 
+            <a
+              href="/privacy"
               className="underline underline-offset-4 hover:text-primary transition-colors duration-200 font-medium"
             >
               Privacy Policy

@@ -2,13 +2,13 @@
 import React from "react";
 import Logo from "@/components/shared/Logo";
 import { motion } from "framer-motion";
-import { 
-  BuildingIcon, 
-  HeartHandshakeIcon, 
+import {
+  BuildingIcon,
+  HeartHandshakeIcon,
   CreditCardIcon,
   ShieldCheckIcon,
   Users2Icon,
-  ActivityIcon
+  ActivityIcon,
 } from "lucide-react";
 
 export const AuthHero = () => {
@@ -28,42 +28,42 @@ export const AuthHero = () => {
     <div className="hidden md:flex h-full bg-gradient-to-br from-sidebar/5 via-green-50/50 to-primary/5 dark:from-sidebar/20 dark:via-sidebar/10 dark:to-primary/10 relative overflow-hidden">
       {/* Animated Background Pattern */}
       <div className="absolute inset-0">
-        <motion.div 
+        <motion.div
           className="absolute top-20 left-20 w-32 h-32 bg-primary/10 rounded-full blur-xl"
-          animate={{ 
+          animate={{
             scale: [1, 1.2, 1],
-            opacity: [0.3, 0.6, 0.3]
+            opacity: [0.3, 0.6, 0.3],
           }}
-          transition={{ 
+          transition={{
             duration: 4,
             repeat: Infinity,
-            ease: "easeInOut"
+            ease: "easeInOut",
           }}
         />
-        <motion.div 
+        <motion.div
           className="absolute bottom-40 right-16 w-24 h-24 bg-green-500/20 rounded-full blur-lg"
-          animate={{ 
+          animate={{
             scale: [1, 1.3, 1],
-            opacity: [0.2, 0.5, 0.2]
+            opacity: [0.2, 0.5, 0.2],
           }}
-          transition={{ 
+          transition={{
             duration: 3,
             repeat: Infinity,
             ease: "easeInOut",
-            delay: 1
+            delay: 1,
           }}
         />
-        <motion.div 
+        <motion.div
           className="absolute top-1/3 right-1/3 w-16 h-16 bg-primary/20 rounded-full blur-md"
-          animate={{ 
+          animate={{
             scale: [1, 1.1, 1],
-            opacity: [0.4, 0.7, 0.4]
+            opacity: [0.4, 0.7, 0.4],
           }}
-          transition={{ 
+          transition={{
             duration: 5,
             repeat: Infinity,
             ease: "easeInOut",
-            delay: 2
+            delay: 2,
           }}
         />
       </div>
@@ -71,7 +71,7 @@ export const AuthHero = () => {
       {/* Main Content */}
       <div className="flex flex-col justify-center items-center w-full px-8 lg:px-12 relative z-10">
         {/* Logo Section */}
-        <motion.div 
+        <motion.div
           className="mb-12"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -81,7 +81,7 @@ export const AuthHero = () => {
         </motion.div>
 
         {/* Hero Text */}
-        <motion.div 
+        <motion.div
           className="text-center max-w-lg"
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -98,8 +98,9 @@ export const AuthHero = () => {
           </h2>
 
           <p className="text-muted-foreground text-lg leading-relaxed mb-10">
-            Empowering healthcare administrators with comprehensive tools to manage 
-            hospitals, HMOs, and insurance plans across Nigeria's digital health ecosystem.
+            Empowering healthcare administrators with comprehensive tools to
+            manage hospitals, HMOs, and insurance plans across Nigeria's digital
+            health ecosystem.
           </p>
 
           {/* Feature Cards */}
@@ -126,7 +127,7 @@ export const AuthHero = () => {
           </div>
 
           {/* Stats Section */}
-          <motion.div 
+          <motion.div
             className="grid grid-cols-3 gap-6 pt-6 border-t border-border/30"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -149,7 +150,7 @@ export const AuthHero = () => {
         </motion.div>
 
         {/* Animated Decorative Elements */}
-        <motion.div 
+        <motion.div
           className="absolute bottom-8 left-1/2 transform -translate-x-1/2"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
@@ -160,15 +161,15 @@ export const AuthHero = () => {
               <motion.div
                 key={index}
                 className="w-2 h-2 bg-primary rounded-full"
-                animate={{ 
+                animate={{
                   opacity: [0.4, 1, 0.4],
-                  scale: [1, 1.2, 1]
+                  scale: [1, 1.2, 1],
                 }}
-                transition={{ 
+                transition={{
                   duration: 2,
                   repeat: Infinity,
                   ease: "easeInOut",
-                  delay: index * 0.3
+                  delay: index * 0.3,
                 }}
               />
             ))}
