@@ -1,15 +1,41 @@
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
-import { redirect } from "next/navigation";
+"use client";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
-export default async function Home() {
-  const session = await auth.api.getSession({
-    headers: await headers(),
-  });
+export default function Home() {
+  const { data: session, isPending } = authClient.useSession();
+  const { signOut } = authClient;
+  const router = useRouter();
 
-  if (!session) {
-    redirect("/sign-in");
+  useEffect(() => {
+    if (!isPending && !session) {
+      router.push("/sign-in");
+    }
+  }, [isPending, session, router]);
+
+  if (isPending) {
+    return <div>Loading...</div>;
   }
 
-  return <div>{session.session.id}</div>;
+  if (!session) {
+    return null; // Prevent rendering anything while redirecting
+  }
+
+  return (
+    <div>
+      <h1>Welcome, {session.user.name}!</h1>
+      <button
+        onClick={() =>
+          signOut({
+            fetchOptions: {
+              onSuccess: () => router.push("/sign-in"),
+            },
+          })
+        }
+      >
+        Sign Out
+      </button>
+    </div>
+  );
 }

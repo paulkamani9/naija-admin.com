@@ -1,10 +1,8 @@
-import { SignInView } from '@/views/Auth/SignInView'
-import React from 'react'
+import { SignInView } from "@/views/Auth/SignInView";
+import React from "react";
 
-const SignInPage = () => {
-  return (
-    <SignInView />
-  )
-}
+const SignInPage = async () => {
+  return <SignInView />;
+};
 
-export default SignInPage
+export default SignInPage;
