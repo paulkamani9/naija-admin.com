@@ -69,15 +69,15 @@
   --chart-3: oklch(0.398 0.07 227.392);
   --chart-4: oklch(0.828 0.189 84.429);
   --chart-5: oklch(0.769 0.188 70.08);
-  /* Sidebar background color  */
-  --sidebar: oklch(0.2 0.0283 174.92);
-  /* Sidebar foreground i.e text */
-  --sidebar-foreground: oklch(0.82 0.0057 182.99);
+  /* Sidebar background color - dark green inspired by Nigerian flag */
+  --sidebar: oklch(21.467% 0.07304 142.511);
+  /* Sidebar foreground i.e text - light green-tinted white */
+  --sidebar-foreground: oklch(0.95 0.02 150);
   --sidebar-primary: oklch(0.205 0 0);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  /*  Sidebar active item background color */
-  --sidebar-accent: oklch(0.34 0.0601 171.21);
-  /*  Sidebar active item text color */
+  /*  Sidebar active item background color - medium green */
+  --sidebar-accent: oklch(35.658% 0.10703 146.134);
+  /*  Sidebar active item text color - bright white */
   --sidebar-accent-foreground: oklch(1 0 0);
   --sidebar-border: oklch(0.922 0 0);
   --sidebar-ring: oklch(0.708 0 0);
@@ -107,12 +107,12 @@
   --chart-3: oklch(0.769 0.188 70.08);
   --chart-4: oklch(0.627 0.265 303.9);
   --chart-5: oklch(0.645 0.246 16.439);
-  --sidebar: oklch(0.205 0 0);
-  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar: oklch(0.12 0.06 150);
+  --sidebar-foreground: oklch(0.92 0.02 150);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
-  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.25 0.1 150);
+  --sidebar-accent-foreground: oklch(0.98 0.01 150);
   --sidebar-border: oklch(1 0 0 / 10%);
   --sidebar-ring: oklch(0.556 0 0);
 }
