@@ -6,7 +6,7 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
     <SidebarProvider suppressHydrationWarning>
       <AdminSidebar />
-      <main className="flex flex-col h-screen w-screen bg-muted">
+      <main className="flex flex-col h-screen w-screen ">
         <AdminNavbar />
         <div className="flex-1 overflow-auto">{children}</div>
       </main>

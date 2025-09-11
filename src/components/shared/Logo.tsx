@@ -60,7 +60,9 @@ const Logo: React.FC<LogoProps> = ({
         >
           Naija
         </h1>
-        <span className={`${currentSize.mainText} font-light text-gray-600`}>
+        <span
+          className={`${currentSize.mainText} font-light text-gray-600 dark:text-gray-300`}
+        >
           .com
         </span>
       </div>
