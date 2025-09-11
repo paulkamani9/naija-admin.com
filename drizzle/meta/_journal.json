@@ -8,6 +8,13 @@
       "when": 1757491667567,
       "tag": "0000_flaky_chat",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1757627708939,
+      "tag": "0001_awesome_the_hunter",
+      "breakpoints": true
     }
   ]
 }
