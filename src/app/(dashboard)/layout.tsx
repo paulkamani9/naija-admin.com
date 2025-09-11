@@ -1,12 +1,14 @@
 import { AdminSidebar } from "@/components/sidebar/AdminSidebar";
+import { AdminNavbar } from "@/components/navbar/AdminNavbar";
 import { SidebarProvider } from "@/components/ui/sidebar";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   return (
-    <SidebarProvider>
-      <AdminSidebar/>
+    <SidebarProvider suppressHydrationWarning>
+      <AdminSidebar />
       <main className="flex flex-col h-screen w-screen bg-muted">
-        {children}
+        <AdminNavbar />
+        <div className="flex-1 overflow-auto">{children}</div>
       </main>
     </SidebarProvider>
   );
