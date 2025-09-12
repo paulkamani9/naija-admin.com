@@ -8,7 +8,9 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
       <AdminSidebar />
       <main className="flex flex-col h-screen w-screen ">
         <AdminNavbar />
-        <div className="flex-1 overflow-auto">{children}</div>
+        <div className="flex-1 overflow-auto p-6 bg-background/50">
+          {children}
+        </div>
       </main>
     </SidebarProvider>
   );
