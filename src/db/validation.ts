@@ -29,6 +29,7 @@ export const createHmoSchema = z.object({
   name: z.string().min(2, "HMO name must be at least 2 characters").max(255),
   code: z.string().max(50).optional(),
   hospitalId: z.string().uuid("Invalid hospital ID").optional(),
+  logoUrl: z.string().url("Invalid URL").max(2048).optional(),
 });
 
 export const updateHmoSchema = createHmoSchema.partial();

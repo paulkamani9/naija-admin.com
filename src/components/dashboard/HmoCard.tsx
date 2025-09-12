@@ -5,6 +5,7 @@ import { BaseDashboardCard } from "./BaseDashboardCard";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { HeartHandshakeIcon, BuildingIcon } from "lucide-react";
+// Using a standard img tag to avoid Next.js remote image domain config requirements
 import type { Hmo, HmoWithRelations } from "@/db/types";
 
 interface HmoCardProps {
@@ -37,8 +38,25 @@ export function HmoCard({ hmos, onAddNew, isLoading }: HmoCardProps) {
             {hmos.slice(0, 3).map((hmo, index) => (
               <div key={hmo.id}>
                 <div className="group/item flex items-start gap-3 p-3 rounded-lg hover:bg-muted/30 transition-colors cursor-pointer">
-                  <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center shrink-0 group-hover/item:bg-green-500/15 transition-colors">
-                    <HeartHandshakeIcon className="w-4 h-4 text-green-600" />
+                  <div className="w-10 h-10 rounded-full bg-green-500/10 flex items-center justify-center shrink-0 overflow-hidden group-hover/item:bg-green-500/15 transition-colors">
+                    {"logoUrl" in hmo && hmo.logoUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img
+                        src={hmo.logoUrl}
+                        alt={`${hmo.name} logo`}
+                        width={24}
+                        height={24}
+                        className="object-contain"
+                        onError={(e) => {
+                          const target = e.currentTarget as HTMLImageElement;
+                          if (target.src !== "/hmo-placeholder.svg") {
+                            target.src = "/hmo-placeholder.svg";
+                          }
+                        }}
+                      />
+                    ) : (
+                      <HeartHandshakeIcon className="w-4 h-4 text-green-600" />
+                    )}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center gap-2 mb-1">

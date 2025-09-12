@@ -39,6 +39,7 @@ export type CreateHmoInput = {
   name: string;
   code?: string;
   hospitalId?: string;
+  logoUrl?: string;
 };
 
 export type UpdateHmoInput = Partial<CreateHmoInput>;
@@ -98,6 +99,6 @@ export type HmoWithRelations = Hmo & {
 };
 
 export type PlanWithRelations = InsurancePlan & {
-  hmo: Pick<Hmo, "id" | "name" | "code">;
+  hmo: Pick<Hmo, "id" | "name" | "code" | "logoUrl">;
   hospital: Pick<Hospital, "id" | "name" | "state">;
 };

@@ -15,6 +15,13 @@
       "when": 1757627708939,
       "tag": "0001_awesome_the_hunter",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1757663711065,
+      "tag": "0002_lying_hammerhead",
+      "breakpoints": true
     }
   ]
 }

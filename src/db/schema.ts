@@ -10,7 +10,6 @@ import {
   pgEnum,
 } from "drizzle-orm/pg-core";
 
-
 export const user = pgTable("user", {
   id: text("id").primaryKey(),
   name: text("name").notNull(),
@@ -112,6 +111,8 @@ export const hmos = pgTable(
     id: uuid("id").defaultRandom().primaryKey(),
     name: varchar("name", { length: 255 }).notNull(),
     code: varchar("code", { length: 50 }).unique(), // Optional short identifier code
+    // Optional logo URL to display a small icon for the HMO
+    logoUrl: text("logo_url"),
     // Default hospital association (can be nullable if HMO operates across multiple hospitals)
     hospitalId: uuid("hospital_id").references(() => hospitals.id, {
       onDelete: "cascade",

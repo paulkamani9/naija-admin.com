@@ -19,6 +19,7 @@ interface BaseDashboardCardProps {
   headerActions?: React.ReactNode;
   variant?: "default" | "compact";
   isLoading?: boolean;
+  customAddButton?: React.ReactNode;
 }
 
 export function BaseDashboardCard({
@@ -34,6 +35,7 @@ export function BaseDashboardCard({
   headerActions,
   variant = "default",
   isLoading = false,
+  customAddButton,
 }: BaseDashboardCardProps) {
   return (
     <Card
@@ -76,17 +78,18 @@ export function BaseDashboardCard({
 
           <div className="flex items-center gap-2 shrink-0">
             {headerActions}
-            {onAddNew && (
-              <Button
-                onClick={onAddNew}
-                size="sm"
-                className="h-8 px-3 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow-md transition-all duration-200"
-                disabled={isLoading}
-              >
-                <PlusIcon className="w-3.5 h-3.5 mr-1.5" />
-                {addNewLabel}
-              </Button>
-            )}
+            {customAddButton ||
+              (onAddNew && (
+                <Button
+                  onClick={onAddNew}
+                  size="sm"
+                  className="h-8 px-3 bg-primary hover:bg-primary/90 text-primary-foreground shadow-sm hover:shadow-md transition-all duration-200"
+                  disabled={isLoading}
+                >
+                  <PlusIcon className="w-3.5 h-3.5 mr-1.5" />
+                  {addNewLabel}
+                </Button>
+              ))}
           </div>
         </div>
       </CardHeader>

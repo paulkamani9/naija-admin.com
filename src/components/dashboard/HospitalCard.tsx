@@ -11,12 +11,14 @@ interface HospitalCardProps {
   hospitals: (Hospital | HospitalWithAdmin)[];
   onAddNew?: () => void;
   isLoading?: boolean;
+  customAddButton?: React.ReactNode;
 }
 
 export function HospitalCard({
   hospitals,
   onAddNew,
   isLoading,
+  customAddButton,
 }: HospitalCardProps) {
   return (
     <BaseDashboardCard
@@ -28,6 +30,7 @@ export function HospitalCard({
       addNewLabel="Add Hospital"
       viewAllHref="/hospitals"
       isLoading={isLoading}
+      customAddButton={customAddButton}
     >
       <div className="space-y-3">
         {hospitals.length === 0 ? (

@@ -181,6 +181,7 @@ export class HmoQueries {
         id: hmos.id,
         name: hmos.name,
         code: hmos.code,
+        logoUrl: hmos.logoUrl,
         hospitalId: hmos.hospitalId,
         createdBy: hmos.createdBy,
         createdAt: hmos.createdAt,
@@ -320,6 +321,7 @@ export class PlanQueries {
           id: hmos.id,
           name: hmos.name,
           code: hmos.code,
+          logoUrl: hmos.logoUrl,
         },
         hospital: {
           id: hospitals.id,

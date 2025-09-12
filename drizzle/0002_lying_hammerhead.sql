@@ -1,0 +1,1 @@
+ALTER TABLE "hmos" ADD COLUMN "logo_url" text;
