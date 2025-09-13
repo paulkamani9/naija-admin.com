@@ -12,9 +12,7 @@ import {
   UserIcon,
 } from "lucide-react";
 import { getHmosAction, deleteHmoAction, getHmoAction } from "@/server";
-import type {
-  Hmo,
-} from "@/db/types";
+import type { Hmo } from "@/db/types";
 
 // UI Components
 import { Button } from "@/components/ui/button";
@@ -33,6 +31,16 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { AddHmoDialog } from "@/components/forms/AddHmoDialog";
 
@@ -55,6 +63,8 @@ export const HMOView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [editingHmo, setEditingHmo] = useState<HmoWithDetails | null>(null);
+  const [hmoToDelete, setHmoToDelete] = useState<HmoWithDetails | null>(null);
   const itemsPerPage = 10;
 
   const loadHmos = async () => {
@@ -106,25 +116,31 @@ export const HMOView = () => {
     setTotalHmos((prev) => prev + 1);
   };
 
-  const handleDeleteHmo = async (id: string) => {
-    if (
-      confirm(
-        "Are you sure you want to delete this HMO? This will also delete all related insurance plans."
+  const handleEditSuccess = (updatedHmo: Hmo) => {
+    setHmos((prev) =>
+      prev.map((hmo) =>
+        hmo.id === updatedHmo.id ? { ...hmo, ...updatedHmo } : hmo
       )
-    ) {
-      try {
-        const result = await deleteHmoAction(id);
-        if (result.success) {
-          setHmos((prev) => prev.filter((hmo) => hmo.id !== id));
-          setTotalHmos((prev) => prev - 1);
-        } else {
-          console.error("Failed to delete HMO:", result.errors);
-          alert("Failed to delete HMO. Please try again.");
-        }
-      } catch (error) {
-        console.error("Error deleting HMO:", error);
-        alert("An error occurred while deleting the HMO.");
+    );
+    setEditingHmo(null);
+  };
+
+  const handleDeleteHmo = async () => {
+    if (!hmoToDelete) return;
+
+    try {
+      const result = await deleteHmoAction(hmoToDelete.id);
+      if (result.success) {
+        setHmos((prev) => prev.filter((hmo) => hmo.id !== hmoToDelete.id));
+        setTotalHmos((prev) => prev - 1);
+        setHmoToDelete(null);
+      } else {
+        console.error("Failed to delete HMO:", result.errors);
+        alert("Failed to delete HMO. Please try again.");
       }
+    } catch (error) {
+      console.error("Error deleting HMO:", error);
+      alert("An error occurred while deleting the HMO.");
     }
   };
 
@@ -255,7 +271,7 @@ export const HMOView = () => {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
                           className="flex items-center cursor-pointer"
-                          onClick={() => alert(`Edit HMO ${hmo.id}`)}
+                          onClick={() => setEditingHmo(hmo)}
                         >
                           <PencilIcon className="mr-2 h-4 w-4" />
                           Edit HMO
@@ -263,8 +279,7 @@ export const HMOView = () => {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="flex items-center cursor-pointer text-destructive focus:text-destructive"
-                          variant="destructive"
-                          onClick={() => handleDeleteHmo(hmo.id)}
+                          onClick={() => setHmoToDelete(hmo)}
                         >
                           <TrashIcon className="mr-2 h-4 w-4" />
                           Delete HMO
@@ -336,6 +351,44 @@ export const HMOView = () => {
           </div>
         )}
       </div>
+
+      {/* Edit HMO Dialog */}
+      {editingHmo && (
+        <AddHmoDialog
+          hmo={editingHmo}
+          open={!!editingHmo}
+          onOpenChange={(open: boolean) => !open && setEditingHmo(null)}
+          onSuccess={handleEditSuccess}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={!!hmoToDelete}
+        onOpenChange={(open) => !open && setHmoToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete HMO</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{hmoToDelete?.name}"? This will
+              also delete all related insurance plans. This action cannot be
+              undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setHmoToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteHmo}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

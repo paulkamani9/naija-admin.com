@@ -24,7 +24,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { createPlanAction, getHospitalsAction, getHmosAction } from "@/server";
+import {
+  createPlanAction,
+  updatePlanAction,
+  getHospitalsAction,
+  getHmosAction,
+} from "@/server";
 import type { InsurancePlan, Hospital, Hmo } from "@/db/types";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -81,6 +86,7 @@ const planFormSchema = z
 type PlanFormValues = z.infer<typeof planFormSchema>;
 
 interface PlanFormProps {
+  plan?: InsurancePlan; // For editing existing plan
   onSuccess?: (plan: InsurancePlan) => void;
   onCancel?: () => void;
   hospitalsProp?: Hospital[];
@@ -88,6 +94,7 @@ interface PlanFormProps {
 }
 
 export function PlanForm({
+  plan,
   onSuccess,
   onCancel,
   hospitalsProp,
@@ -96,21 +103,26 @@ export function PlanForm({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [hospitals, setHospitals] = useState<Hospital[]>(hospitalsProp || []);
   const [hmos, setHmos] = useState<Hmo[]>(hmosProp || []);
+  const isEditing = !!plan;
 
   const form = useForm<PlanFormValues>({
     resolver: zodResolver(planFormSchema),
     defaultValues: {
-      name: "",
-      hospitalId: "",
-      hmoId: "",
-      planType: "individual" as const,
-      durationYears: 1,
-      monthlyPrice: 0,
-      yearlyPrice: 0,
-      deductible: 0,
-      annualOutOfPocketLimit: 0,
-      annualMaxBenefit: 0,
-      description: "",
+      name: plan?.name || "",
+      hospitalId: plan?.hospitalId || "",
+      hmoId: plan?.hmoId || "",
+      planType: plan?.planType || ("individual" as const),
+      durationYears: plan?.durationYears || 1,
+      monthlyPrice: plan?.monthlyCostCents ? plan.monthlyCostCents / 100 : 0,
+      yearlyPrice: plan?.yearlyCostCents ? plan.yearlyCostCents / 100 : 0,
+      deductible: plan?.deductibleCents ? plan.deductibleCents / 100 : 0,
+      annualOutOfPocketLimit: plan?.annualOutOfPocketLimitCents
+        ? plan.annualOutOfPocketLimitCents / 100
+        : 0,
+      annualMaxBenefit: plan?.annualMaxBenefitCents
+        ? plan.annualMaxBenefitCents / 100
+        : 0,
+      description: plan?.description || "",
     },
   });
 
@@ -165,14 +177,33 @@ export function PlanForm({
     [hmos]
   );
 
-  // Auto-calculate yearly price when monthly price changes
+  // Update form when plan prop changes (for editing)
+  useEffect(() => {
+    if (plan) {
+      form.reset({
+        name: plan.name,
+        hospitalId: plan.hospitalId,
+        hmoId: plan.hmoId,
+        planType: plan.planType,
+        durationYears: plan.durationYears,
+        monthlyPrice: plan.monthlyCostCents / 100,
+        yearlyPrice: plan.yearlyCostCents / 100,
+        deductible: plan.deductibleCents ? plan.deductibleCents / 100 : 0,
+        annualOutOfPocketLimit: plan.annualOutOfPocketLimitCents / 100,
+        annualMaxBenefit: plan.annualMaxBenefitCents / 100,
+        description: plan.description || "",
+      });
+    }
+  }, [plan, form]);
+
+  // Auto-calculate yearly price when monthly price changes (only for new plans)
   const monthlyPrice = form.watch("monthlyPrice");
   useEffect(() => {
-    if (monthlyPrice > 0) {
+    if (!isEditing && monthlyPrice > 0) {
       const yearlyPrice = monthlyPrice * 12;
       form.setValue("yearlyPrice", yearlyPrice, { shouldValidate: true });
     }
-  }, [monthlyPrice, form]);
+  }, [monthlyPrice, form, isEditing]);
 
   const onSubmit = async (values: PlanFormValues) => {
     setIsSubmitting(true);
@@ -192,14 +223,18 @@ export function PlanForm({
         ),
         annualMaxBenefitCents: Math.round(values.annualMaxBenefit * 100),
         description: values.description || undefined,
-        isActive: true,
+        ...(isEditing ? {} : { isActive: true }), // Only set isActive for new plans
       };
 
-      const result = await createPlanAction(planData);
+      const result = isEditing
+        ? await updatePlanAction(plan!.id, planData)
+        : await createPlanAction(planData);
 
       if (result.success && result.data) {
-        toast.success("Plan has been added.");
-        form.reset();
+        toast.success(
+          isEditing ? "Plan has been updated." : "Plan has been added."
+        );
+        if (!isEditing) form.reset();
         onSuccess?.(result.data);
       } else if (result.errors) {
         // Map field errors into form
@@ -223,10 +258,12 @@ export function PlanForm({
           }
         });
       } else {
-        toast.error("Failed to create plan. Please try again.");
+        toast.error(
+          `Failed to ${isEditing ? "update" : "create"} plan. Please try again.`
+        );
       }
     } catch (e) {
-      console.error("Create plan error", e);
+      console.error(`${isEditing ? "Update" : "Create"} plan error`, e);
       toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -553,7 +590,13 @@ export function PlanForm({
             disabled={isSubmitting}
             className="w-full sm:w-auto"
           >
-            {isSubmitting ? "Creating..." : "Create Plan"}
+            {isSubmitting
+              ? isEditing
+                ? "Updating..."
+                : "Creating..."
+              : isEditing
+              ? "Update Plan"
+              : "Create Plan"}
           </Button>
         </div>
       </form>

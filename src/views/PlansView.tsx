@@ -41,6 +41,16 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { AddPlanDialog } from "@/components/forms/AddPlanDialog";
 import {
@@ -87,6 +97,10 @@ export const PlansView = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [planTypeFilter, setPlanTypeFilter] = useState<string>("");
   const [showInactive, setShowInactive] = useState(false);
+  const [editingPlan, setEditingPlan] = useState<PlanWithDetails | null>(null);
+  const [planToDelete, setPlanToDelete] = useState<PlanWithDetails | null>(
+    null
+  );
   const itemsPerPage = 9;
 
   const loadPlans = async () => {
@@ -151,21 +165,31 @@ export const PlansView = () => {
     setTotalPlans((prev) => prev + 1);
   };
 
-  const handleDeletePlan = async (id: string) => {
-    if (confirm("Are you sure you want to delete this insurance plan?")) {
-      try {
-        const result = await deletePlanAction(id);
-        if (result.success) {
-          setPlans((prev) => prev.filter((plan) => plan.id !== id));
-          setTotalPlans((prev) => prev - 1);
-        } else {
-          console.error("Failed to delete plan:", result.errors);
-          alert("Failed to delete plan. Please try again.");
-        }
-      } catch (error) {
-        console.error("Error deleting plan:", error);
-        alert("An error occurred while deleting the plan.");
+  const handleEditSuccess = (updatedPlan: InsurancePlan) => {
+    setPlans((prev) =>
+      prev.map((plan) =>
+        plan.id === updatedPlan.id ? { ...plan, ...updatedPlan } : plan
+      )
+    );
+    setEditingPlan(null);
+  };
+
+  const handleDeletePlan = async () => {
+    if (!planToDelete) return;
+
+    try {
+      const result = await deletePlanAction(planToDelete.id);
+      if (result.success) {
+        setPlans((prev) => prev.filter((plan) => plan.id !== planToDelete.id));
+        setTotalPlans((prev) => prev - 1);
+        setPlanToDelete(null);
+      } else {
+        console.error("Failed to delete plan:", result.errors);
+        alert("Failed to delete plan. Please try again.");
       }
+    } catch (error) {
+      console.error("Error deleting plan:", error);
+      alert("An error occurred while deleting the plan.");
     }
   };
 
@@ -347,7 +371,7 @@ export const PlansView = () => {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
                           className="flex items-center cursor-pointer"
-                          onClick={() => alert(`Edit plan ${plan.id}`)}
+                          onClick={() => setEditingPlan(plan)}
                         >
                           <PencilIcon className="mr-2 h-4 w-4" />
                           Edit Plan
@@ -362,8 +386,7 @@ export const PlansView = () => {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="flex items-center cursor-pointer text-destructive focus:text-destructive"
-                          variant="destructive"
-                          onClick={() => handleDeletePlan(plan.id)}
+                          onClick={() => setPlanToDelete(plan)}
                         >
                           <TrashIcon className="mr-2 h-4 w-4" />
                           Delete Plan
@@ -468,6 +491,43 @@ export const PlansView = () => {
           </div>
         )}
       </div>
+
+      {/* Edit Plan Dialog */}
+      {editingPlan && (
+        <AddPlanDialog
+          plan={editingPlan}
+          open={!!editingPlan}
+          onOpenChange={(open: boolean) => !open && setEditingPlan(null)}
+          onSuccess={handleEditSuccess}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={!!planToDelete}
+        onOpenChange={(open) => !open && setPlanToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Insurance Plan</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{planToDelete?.name}"? This
+              action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setPlanToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeletePlan}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

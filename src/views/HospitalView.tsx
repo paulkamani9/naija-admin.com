@@ -34,6 +34,16 @@ import {
   DropdownMenuTrigger,
   DropdownMenuSeparator,
 } from "@/components/ui/dropdown-menu";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Badge } from "@/components/ui/badge";
 import { AddHospitalDialog } from "@/components/forms/AddHospitalDialog";
 import { Separator } from "@/components/ui/separator";
@@ -44,6 +54,10 @@ export const HospitalView = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
+  const [editingHospital, setEditingHospital] = useState<Hospital | null>(null);
+  const [hospitalToDelete, setHospitalToDelete] = useState<Hospital | null>(
+    null
+  );
   const itemsPerPage = 10;
 
   const loadHospitals = async () => {
@@ -76,21 +90,33 @@ export const HospitalView = () => {
     setTotalHospitals((prev) => prev + 1);
   };
 
-  const handleDeleteHospital = async (id: string) => {
-    if (confirm("Are you sure you want to delete this hospital?")) {
-      try {
-        const result = await deleteHospitalAction(id);
-        if (result.success) {
-          setHospitals((prev) => prev.filter((hospital) => hospital.id !== id));
-          setTotalHospitals((prev) => prev - 1);
-        } else {
-          console.error("Failed to delete hospital:", result.errors);
-          alert("Failed to delete hospital. Please try again.");
-        }
-      } catch (error) {
-        console.error("Error deleting hospital:", error);
-        alert("An error occurred while deleting the hospital.");
+  const handleEditSuccess = (updatedHospital: Hospital) => {
+    setHospitals((prev) =>
+      prev.map((hospital) =>
+        hospital.id === updatedHospital.id ? updatedHospital : hospital
+      )
+    );
+    setEditingHospital(null);
+  };
+
+  const handleDeleteHospital = async () => {
+    if (!hospitalToDelete) return;
+
+    try {
+      const result = await deleteHospitalAction(hospitalToDelete.id);
+      if (result.success) {
+        setHospitals((prev) =>
+          prev.filter((hospital) => hospital.id !== hospitalToDelete.id)
+        );
+        setTotalHospitals((prev) => prev - 1);
+        setHospitalToDelete(null);
+      } else {
+        console.error("Failed to delete hospital:", result.errors);
+        alert("Failed to delete hospital. Please try again.");
       }
+    } catch (error) {
+      console.error("Error deleting hospital:", error);
+      alert("An error occurred while deleting the hospital.");
     }
   };
 
@@ -199,7 +225,7 @@ export const HospitalView = () => {
                       <DropdownMenuContent align="end">
                         <DropdownMenuItem
                           className="flex items-center cursor-pointer"
-                          onClick={() => alert(`Edit hospital ${hospital.id}`)}
+                          onClick={() => setEditingHospital(hospital)}
                         >
                           <PencilIcon className="mr-2 h-4 w-4" />
                           Edit Hospital
@@ -207,8 +233,7 @@ export const HospitalView = () => {
                         <DropdownMenuSeparator />
                         <DropdownMenuItem
                           className="flex items-center cursor-pointer text-destructive focus:text-destructive"
-                          variant="destructive"
-                          onClick={() => handleDeleteHospital(hospital.id)}
+                          onClick={() => setHospitalToDelete(hospital)}
                         >
                           <TrashIcon className="mr-2 h-4 w-4" />
                           Delete Hospital
@@ -286,6 +311,43 @@ export const HospitalView = () => {
           </div>
         )}
       </div>
+
+      {/* Edit Hospital Dialog */}
+      {editingHospital && (
+        <AddHospitalDialog
+          hospital={editingHospital}
+          open={!!editingHospital}
+          onOpenChange={(open: boolean) => !open && setEditingHospital(null)}
+          onSuccess={handleEditSuccess}
+        />
+      )}
+
+      {/* Delete Confirmation Dialog */}
+      <AlertDialog
+        open={!!hospitalToDelete}
+        onOpenChange={(open) => !open && setHospitalToDelete(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete Hospital</AlertDialogTitle>
+            <AlertDialogDescription>
+              Are you sure you want to delete "{hospitalToDelete?.name}"? This
+              action cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setHospitalToDelete(null)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={handleDeleteHospital}
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+            >
+              Delete
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 };

@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { createHmoAction } from "@/server";
+import { createHmoAction, updateHmoAction } from "@/server";
 import { getHospitalsAction } from "@/server";
 import type { Hmo, Hospital } from "@/db/types";
 
@@ -47,25 +47,34 @@ const hmoFormSchema = z.object({
 type HmoFormValues = z.infer<typeof hmoFormSchema>;
 
 interface HmoFormProps {
+  hmo?: Hmo; // For editing existing HMO
   onSuccess?: (hmo: Hmo) => void;
   onCancel?: () => void;
   // Allow parent to pass a newly created hospital to reflect immediately in dropdown
   hospitalsProp?: Hospital[];
 }
 
-export function HmoForm({ onSuccess, onCancel, hospitalsProp }: HmoFormProps) {
+export function HmoForm({
+  hmo,
+  onSuccess,
+  onCancel,
+  hospitalsProp,
+}: HmoFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [imagePreview, setImagePreview] = useState<string | null>(
+    hmo?.logoUrl || null
+  );
   const [hospitals, setHospitals] = useState<Hospital[]>(hospitalsProp || []);
+  const isEditing = !!hmo;
 
   const form = useForm<HmoFormValues>({
     resolver: zodResolver(hmoFormSchema),
     defaultValues: {
-      name: "",
-      code: "",
-      hospitalId: "none",
-      logoUrl: "",
+      name: hmo?.name || "",
+      code: hmo?.code || "",
+      hospitalId: hmo?.hospitalId || "none",
+      logoUrl: hmo?.logoUrl || "",
     },
   });
 
@@ -86,6 +95,19 @@ export function HmoForm({ onSuccess, onCancel, hospitalsProp }: HmoFormProps) {
       setHospitals(hospitalsProp);
     }
   }, [hospitalsProp]);
+
+  // Update form when hmo prop changes (for editing)
+  useEffect(() => {
+    if (hmo) {
+      form.reset({
+        name: hmo.name,
+        code: hmo.code || "",
+        hospitalId: hmo.hospitalId || "none",
+        logoUrl: hmo.logoUrl || "",
+      });
+      setImagePreview(hmo.logoUrl || null);
+    }
+  }, [hmo, form]);
 
   const sortedHospitals = useMemo(
     () => [...hospitals].sort((a, b) => a.name.localeCompare(b.name)),
@@ -151,12 +173,18 @@ export function HmoForm({ onSuccess, onCancel, hospitalsProp }: HmoFormProps) {
         logoUrl: values.logoUrl || undefined,
       };
 
-      const result = await createHmoAction(clean);
+      const result = isEditing
+        ? await updateHmoAction(hmo!.id, clean)
+        : await createHmoAction(clean);
 
       if (result.success && result.data) {
-        toast.success("HMO has been added.");
-        form.reset();
-        setImagePreview(null);
+        toast.success(
+          isEditing ? "HMO has been updated." : "HMO has been added."
+        );
+        if (!isEditing) {
+          form.reset();
+          setImagePreview(null);
+        }
         onSuccess?.(result.data);
       } else if (result.errors) {
         // map field errors into form
@@ -170,10 +198,12 @@ export function HmoForm({ onSuccess, onCancel, hospitalsProp }: HmoFormProps) {
           }
         });
       } else {
-        toast.error("Failed to create HMO. Please try again.");
+        toast.error(
+          `Failed to ${isEditing ? "update" : "create"} HMO. Please try again.`
+        );
       }
     } catch (e) {
-      console.error("Create HMO error", e);
+      console.error(`${isEditing ? "Update" : "Create"} HMO error`, e);
       toast.error("An unexpected error occurred. Please try again.");
     } finally {
       setIsSubmitting(false);
@@ -409,7 +439,13 @@ export function HmoForm({ onSuccess, onCancel, hospitalsProp }: HmoFormProps) {
             disabled={isSubmitting || isUploading}
             className="w-full sm:w-auto"
           >
-            {isSubmitting ? "Creating..." : "Create HMO"}
+            {isSubmitting
+              ? isEditing
+                ? "Updating..."
+                : "Creating..."
+              : isEditing
+              ? "Update HMO"
+              : "Create HMO"}
           </Button>
         </div>
       </form>

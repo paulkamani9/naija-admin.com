@@ -8,6 +8,9 @@ import { HmoForm } from "@/components/forms/HmoForm";
 import type { Hmo, Hospital } from "@/db/types";
 
 interface AddHmoDialogProps {
+  hmo?: Hmo; // For editing mode
+  open?: boolean; // For controlled open state
+  onOpenChange?: (open: boolean) => void; // For controlled open state
   onSuccess?: (hmo: Hmo) => void;
   trigger?: React.ReactNode;
   className?: string;
@@ -15,12 +18,20 @@ interface AddHmoDialogProps {
 }
 
 export function AddHmoDialog({
+  hmo,
+  open,
+  onOpenChange,
   onSuccess,
   trigger,
   className,
   hospitals,
 }: AddHmoDialogProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  // Use controlled open state if provided, otherwise use internal state
+  const isOpen = open !== undefined ? open : internalOpen;
+  const setIsOpen = onOpenChange || setInternalOpen;
+  const isEditing = !!hmo;
 
   const handleSuccess = (hmo: Hmo) => {
     setIsOpen(false);
@@ -51,12 +62,17 @@ export function AddHmoDialog({
       )}
 
       <ResponsiveDialog
-        title="Add New HMO"
-        description="Create a new HMO. Optionally associate a default hospital and upload a logo."
+        title={isEditing ? "Edit HMO" : "Add New HMO"}
+        description={
+          isEditing
+            ? "Update the HMO information. Make your changes and save to update the HMO details."
+            : "Create a new HMO. Optionally associate a default hospital and upload a logo."
+        }
         open={isOpen}
         onOpenChange={setIsOpen}
       >
         <HmoForm
+          hmo={hmo}
           onSuccess={handleSuccess}
           onCancel={handleCancel}
           hospitalsProp={hospitals}

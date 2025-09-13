@@ -9,17 +9,28 @@ import { HospitalForm } from "@/components/forms/HospitalForm";
 import type { Hospital } from "@/db/types";
 
 interface AddHospitalDialogProps {
+  hospital?: Hospital; // For editing mode
+  open?: boolean; // For controlled open state
+  onOpenChange?: (open: boolean) => void; // For controlled open state
   onSuccess?: (hospital: Hospital) => void;
   trigger?: React.ReactNode;
   className?: string;
 }
 
 export function AddHospitalDialog({
+  hospital,
+  open,
+  onOpenChange,
   onSuccess,
   trigger,
   className,
 }: AddHospitalDialogProps) {
-  const [isOpen, setIsOpen] = useState(false);
+  const [internalOpen, setInternalOpen] = useState(false);
+
+  // Use controlled open state if provided, otherwise use internal state
+  const isOpen = open !== undefined ? open : internalOpen;
+  const setIsOpen = onOpenChange || setInternalOpen;
+  const isEditing = !!hospital;
 
   const handleSuccess = (hospital: Hospital) => {
     setIsOpen(false);
@@ -52,12 +63,20 @@ export function AddHospitalDialog({
       )}
 
       <ResponsiveDialog
-        title="Add New Hospital"
-        description="Create a new hospital entry in the system. Fill in the required fields to get started."
+        title={isEditing ? "Edit Hospital" : "Add New Hospital"}
+        description={
+          isEditing
+            ? "Update the hospital information. Make your changes and save to update the hospital details."
+            : "Create a new hospital entry in the system. Fill in the required fields to get started."
+        }
         open={isOpen}
         onOpenChange={setIsOpen}
       >
-        <HospitalForm onSuccess={handleSuccess} onCancel={handleCancel} />
+        <HospitalForm
+          hospital={hospital}
+          onSuccess={handleSuccess}
+          onCancel={handleCancel}
+        />
       </ResponsiveDialog>
     </>
   );

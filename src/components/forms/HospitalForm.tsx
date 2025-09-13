@@ -55,25 +55,32 @@ const hospitalFormSchema = z.object({
 type HospitalFormValues = z.infer<typeof hospitalFormSchema>;
 
 import type { Hospital } from "@/db/types";
+import { updateHospitalAction } from "@/server/hospitals";
 
 interface HospitalFormProps {
+  hospital?: Hospital; // For editing existing hospital
   onSuccess?: (hospital: Hospital) => void;
   onCancel?: () => void;
 }
 
-export function HospitalForm({ onSuccess, onCancel }: HospitalFormProps) {
+export function HospitalForm({
+  hospital,
+  onSuccess,
+  onCancel,
+}: HospitalFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [availableLGAs, setAvailableLGAs] = useState<string[]>([]);
+  const isEditing = !!hospital;
 
   const form = useForm<HospitalFormValues>({
     resolver: zodResolver(hospitalFormSchema),
     defaultValues: {
-      name: "",
-      address: "",
-      phone: "",
-      email: "",
-      state: "",
-      localGovernment: "",
+      name: hospital?.name || "",
+      address: hospital?.address || "",
+      phone: hospital?.phone || "",
+      email: hospital?.email || "",
+      state: hospital?.state || "",
+      localGovernment: hospital?.localGovernment || "",
     },
   });
 
@@ -84,13 +91,36 @@ export function HospitalForm({ onSuccess, onCancel }: HospitalFormProps) {
     if (selectedState) {
       const lgas = getLGAsForState(selectedState);
       setAvailableLGAs(lgas);
-      // Reset local government when state changes
-      form.setValue("localGovernment", "");
+      // Only reset local government if it's not already in the new LGA list
+      const currentLGA = form.getValues("localGovernment");
+      if (currentLGA && !lgas.includes(currentLGA)) {
+        form.setValue("localGovernment", "");
+      }
     } else {
       setAvailableLGAs([]);
       form.setValue("localGovernment", "");
     }
   }, [selectedState, form]);
+
+  // Update form when hospital prop changes (for editing)
+  useEffect(() => {
+    if (hospital) {
+      form.reset({
+        name: hospital.name,
+        address: hospital.address || "",
+        phone: hospital.phone || "",
+        email: hospital.email || "",
+        state: hospital.state || "",
+        localGovernment: hospital.localGovernment || "",
+      });
+
+      // Update LGAs for the hospital's state
+      if (hospital.state) {
+        const lgas = getLGAsForState(hospital.state);
+        setAvailableLGAs(lgas);
+      }
+    }
+  }, [hospital, form]);
 
   const onSubmit = async (values: HospitalFormValues) => {
     try {
@@ -106,11 +136,15 @@ export function HospitalForm({ onSuccess, onCancel }: HospitalFormProps) {
         localGovernment: values.localGovernment,
       };
 
-      const result = await createHospitalAction(cleanValues);
+      const result = isEditing
+        ? await updateHospitalAction(hospital!.id, cleanValues)
+        : await createHospitalAction(cleanValues);
 
       if (result.success && result.data) {
-        toast.success("Hospital has been added.");
-        form.reset();
+        toast.success(
+          isEditing ? "Hospital has been updated." : "Hospital has been added."
+        );
+        if (!isEditing) form.reset();
         onSuccess?.(result.data);
       } else {
         // Handle validation errors
@@ -125,7 +159,11 @@ export function HospitalForm({ onSuccess, onCancel }: HospitalFormProps) {
             }
           });
         } else {
-          toast.error("Failed to create hospital. Please try again.");
+          toast.error(
+            `Failed to ${
+              isEditing ? "update" : "create"
+            } hospital. Please try again.`
+          );
         }
       }
     } catch (error) {
@@ -306,7 +344,13 @@ export function HospitalForm({ onSuccess, onCancel }: HospitalFormProps) {
             disabled={isSubmitting}
             className="w-full sm:w-auto"
           >
-            {isSubmitting ? "Creating..." : "Create Hospital"}
+            {isSubmitting
+              ? isEditing
+                ? "Updating..."
+                : "Creating..."
+              : isEditing
+              ? "Update Hospital"
+              : "Create Hospital"}
           </Button>
         </div>
       </form>
