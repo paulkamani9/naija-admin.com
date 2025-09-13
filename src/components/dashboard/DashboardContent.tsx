@@ -7,6 +7,7 @@ import { HmoCard } from "./HmoCard";
 import { PlanCard } from "./PlanCard";
 import { DashboardSkeleton } from "./DashboardSkeleton";
 import { AddHospitalDialog } from "@/components/forms/AddHospitalDialog";
+import { AddHmoDialog } from "@/components/forms/AddHmoDialog";
 import { useOptimisticUpdates } from "@/hooks/use-optimistic-updates";
 import type { Hospital, Hmo, InsurancePlan } from "@/db/types";
 
@@ -36,6 +37,16 @@ export function DashboardContent() {
       console.error("Hospital optimistic update error:", error),
   });
 
+  // Use optimistic updates for HMOs
+  const {
+    data: optimisticHmos,
+    addOptimistic: addOptimisticHmo,
+    setData: setHmosData,
+  } = useOptimisticUpdates({
+    initialData: data.hmos,
+    onError: (error) => console.error("HMO optimistic update error:", error),
+  });
+
   // Update optimistic hospitals when data changes
   useEffect(() => {
     // Only sync when the references differ to avoid update loops
@@ -44,9 +55,16 @@ export function DashboardContent() {
     }
   }, [data.hospitals, optimisticHospitals, setHospitalsData]);
 
+  // Update optimistic HMOs when data changes
+  useEffect(() => {
+    if (optimisticHmos !== data.hmos) {
+      setHmosData(data.hmos);
+    }
+  }, [data.hmos, optimisticHmos, setHmosData]);
+
   // Use optimistic updates for smooth user experience
   const [optimisticData] = useOptimistic(
-    { ...data, hospitals: optimisticHospitals },
+    { ...data, hospitals: optimisticHospitals, hmos: optimisticHmos },
     (state, updatedData: Partial<DashboardData>) => ({
       ...state,
       ...updatedData,
@@ -141,8 +159,37 @@ export function DashboardContent() {
     });
   };
 
-  const handleAddHmo = () => {
-    console.log("Add new HMO");
+  const handleAddHmo = async (hmoData: Hmo) => {
+    const optimistic: Hmo = {
+      id: `temp-${Date.now()}`,
+      name: hmoData.name,
+      code: hmoData.code || null,
+      logoUrl: hmoData.logoUrl || null,
+      hospitalId: hmoData.hospitalId || null,
+      createdBy: "current-user",
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as Hmo;
+
+    await addOptimisticHmo(optimistic, async () => {
+      const result = await getHmosAction({}, { limit: 6 });
+      if (result.success && result.data?.hmos) {
+        setData((prev) => ({ ...prev, hmos: result.data!.hmos }));
+        return { success: true, data: hmoData } as {
+          success: boolean;
+          data: Hmo;
+          errors?: Array<{ field?: string; message: string }>;
+        };
+      }
+      return {
+        success: false,
+        errors: [{ message: "Failed to refresh data" }],
+      } as {
+        success: boolean;
+        data?: Hmo;
+        errors?: Array<{ field?: string; message: string }>;
+      };
+    });
   };
 
   const handleAddPlan = () => {
@@ -165,8 +212,13 @@ export function DashboardContent() {
 
         <HmoCard
           hmos={optimisticData.hmos}
-          onAddNew={handleAddHmo}
           isLoading={isPending}
+          customAddButton={
+            <AddHmoDialog
+              onSuccess={handleAddHmo}
+              hospitals={optimisticData.hospitals}
+            />
+          }
         />
 
         <PlanCard

@@ -12,9 +12,15 @@ interface HmoCardProps {
   hmos: (Hmo | HmoWithRelations)[];
   onAddNew?: () => void;
   isLoading?: boolean;
+  customAddButton?: React.ReactNode;
 }
 
-export function HmoCard({ hmos, onAddNew, isLoading }: HmoCardProps) {
+export function HmoCard({
+  hmos,
+  onAddNew,
+  isLoading,
+  customAddButton,
+}: HmoCardProps) {
   return (
     <BaseDashboardCard
       title="HMOs"
@@ -25,6 +31,7 @@ export function HmoCard({ hmos, onAddNew, isLoading }: HmoCardProps) {
       addNewLabel="Add HMO"
       viewAllHref="/hmo"
       isLoading={isLoading}
+      customAddButton={customAddButton}
     >
       <div className="space-y-3">
         {hmos.length === 0 ? (
