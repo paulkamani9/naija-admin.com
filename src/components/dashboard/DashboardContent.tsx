@@ -82,7 +82,12 @@ export function DashboardContent() {
 
   // Use optimistic updates for smooth user experience
   const [optimisticData] = useOptimistic(
-    { ...data, hospitals: optimisticHospitals, hmos: optimisticHmos, plans: optimisticPlans },
+    {
+      ...data,
+      hospitals: optimisticHospitals,
+      hmos: optimisticHmos,
+      plans: optimisticPlans,
+    },
     (state, updatedData: Partial<DashboardData>) => ({
       ...state,
       ...updatedData,

@@ -27,7 +27,12 @@ const planTypeLabels = {
   enterprise: "Enterprise",
 };
 
-export function PlanCard({ plans, onAddNew, isLoading, customAddButton }: PlanCardProps) {
+export function PlanCard({
+  plans,
+  onAddNew,
+  isLoading,
+  customAddButton,
+}: PlanCardProps) {
   const activePlans = plans.filter((plan) => plan.isActive);
 
   return (
