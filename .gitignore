@@ -41,10 +41,14 @@ yarn-error.log*
 next-env.d.ts
 
 # editor directories and files
-.vscode/*
+.vscode
 !.vscode/settings.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
 .idea   
 /docs/
+
+# Github
+.github
+docs/

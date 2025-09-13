@@ -67,7 +67,7 @@ const NavigationIcons = () => (
       <DropdownMenuLabel>Quick Navigation</DropdownMenuLabel>
       <DropdownMenuSeparator />
       <DropdownMenuItem asChild>
-        <Link href="/hmo" className="flex items-center gap-2">
+        <Link href="/hmos" className="flex items-center gap-2">
           <HeartHandshakeIcon className="h-4 w-4" />
           HMO Management
         </Link>

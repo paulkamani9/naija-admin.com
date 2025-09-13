@@ -24,7 +24,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { createPlanAction, getHospitalsAction, getHmosAction } from "@/actions";
+import { createPlanAction, getHospitalsAction, getHmosAction } from "@/server";
 import type { InsurancePlan, Hospital, Hmo } from "@/db/types";
 import { Textarea } from "@/components/ui/textarea";
 

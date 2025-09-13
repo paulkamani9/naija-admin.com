@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { createHospitalAction } from "@/actions/hospitals";
+import { createHospitalAction } from "@/server/hospitals";
 import { NIGERIAN_STATES, getLGAsForState } from "@/lib/nigerian-states";
 
 // Form schema

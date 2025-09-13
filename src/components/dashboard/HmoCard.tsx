@@ -29,7 +29,7 @@ export function HmoCard({
       icon={HeartHandshakeIcon}
       onAddNew={onAddNew}
       addNewLabel="Add HMO"
-      viewAllHref="/hmo"
+      viewAllHref="/hmos"
       isLoading={isLoading}
       customAddButton={customAddButton}
     >

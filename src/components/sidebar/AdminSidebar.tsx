@@ -28,7 +28,7 @@ const mainSection = [
   {
     icon: HeartHandshakeIcon,
     label: "HMO Management",
-    href: "/hmo",
+    href: "/hmos",
   },
   {
     icon: BuildingIcon,

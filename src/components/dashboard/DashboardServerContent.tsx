@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { getHospitalsAction, getHmosAction, getPlansAction } from "@/actions";
+import { getHospitalsAction, getHmosAction, getPlansAction } from "@/server";
 import { DashboardSkeleton } from "./DashboardSkeleton";
 import { HospitalCard } from "./HospitalCard";
 import { HmoCard } from "./HmoCard";

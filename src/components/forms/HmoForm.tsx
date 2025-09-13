@@ -24,8 +24,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 
-import { createHmoAction } from "@/actions";
-import { getHospitalsAction } from "@/actions";
+import { createHmoAction } from "@/server";
+import { getHospitalsAction } from "@/server";
 import type { Hmo, Hospital } from "@/db/types";
 
 // Form schema aligned with backend validation (name required, code optional, hospital optional, logoUrl optional)

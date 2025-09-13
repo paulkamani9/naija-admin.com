@@ -1,7 +1,7 @@
 "use client";
 
 import { useTransition, useOptimistic, useEffect, useState } from "react";
-import { getHospitalsAction, getHmosAction, getPlansAction } from "@/actions";
+import { getHospitalsAction, getHmosAction, getPlansAction } from "@/server";
 import { HospitalCard } from "./HospitalCard";
 import { HmoCard } from "./HmoCard";
 import { PlanCard } from "./PlanCard";
