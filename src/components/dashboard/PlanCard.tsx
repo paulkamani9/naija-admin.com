@@ -12,6 +12,7 @@ interface PlanCardProps {
   plans: (InsurancePlan | PlanWithRelations)[];
   onAddNew?: () => void;
   isLoading?: boolean;
+  customAddButton?: React.ReactNode;
 }
 
 const planTypeColors = {
@@ -26,7 +27,7 @@ const planTypeLabels = {
   enterprise: "Enterprise",
 };
 
-export function PlanCard({ plans, onAddNew, isLoading }: PlanCardProps) {
+export function PlanCard({ plans, onAddNew, isLoading, customAddButton }: PlanCardProps) {
   const activePlans = plans.filter((plan) => plan.isActive);
 
   return (
@@ -46,6 +47,7 @@ export function PlanCard({ plans, onAddNew, isLoading }: PlanCardProps) {
           </Badge>
         )
       }
+      customAddButton={customAddButton}
     >
       <div className="space-y-3">
         {activePlans.length === 0 ? (

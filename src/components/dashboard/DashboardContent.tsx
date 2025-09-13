@@ -8,6 +8,7 @@ import { PlanCard } from "./PlanCard";
 import { DashboardSkeleton } from "./DashboardSkeleton";
 import { AddHospitalDialog } from "@/components/forms/AddHospitalDialog";
 import { AddHmoDialog } from "@/components/forms/AddHmoDialog";
+import { AddPlanDialog } from "@/components/forms/AddPlanDialog";
 import { useOptimisticUpdates } from "@/hooks/use-optimistic-updates";
 import type { Hospital, Hmo, InsurancePlan } from "@/db/types";
 
@@ -47,6 +48,16 @@ export function DashboardContent() {
     onError: (error) => console.error("HMO optimistic update error:", error),
   });
 
+  // Use optimistic updates for Plans
+  const {
+    data: optimisticPlans,
+    addOptimistic: addOptimisticPlan,
+    setData: setPlansData,
+  } = useOptimisticUpdates({
+    initialData: data.plans,
+    onError: (error) => console.error("Plan optimistic update error:", error),
+  });
+
   // Update optimistic hospitals when data changes
   useEffect(() => {
     // Only sync when the references differ to avoid update loops
@@ -62,9 +73,16 @@ export function DashboardContent() {
     }
   }, [data.hmos, optimisticHmos, setHmosData]);
 
+  // Update optimistic Plans when data changes
+  useEffect(() => {
+    if (optimisticPlans !== data.plans) {
+      setPlansData(data.plans);
+    }
+  }, [data.plans, optimisticPlans, setPlansData]);
+
   // Use optimistic updates for smooth user experience
   const [optimisticData] = useOptimistic(
-    { ...data, hospitals: optimisticHospitals, hmos: optimisticHmos },
+    { ...data, hospitals: optimisticHospitals, hmos: optimisticHmos, plans: optimisticPlans },
     (state, updatedData: Partial<DashboardData>) => ({
       ...state,
       ...updatedData,
@@ -192,8 +210,43 @@ export function DashboardContent() {
     });
   };
 
-  const handleAddPlan = () => {
-    console.log("Add new plan");
+  const handleAddPlan = async (planData: InsurancePlan) => {
+    const optimistic = {
+      id: `temp-${Date.now()}`,
+      name: planData.name,
+      hmoId: planData.hmoId,
+      hospitalId: planData.hospitalId,
+      planType: planData.planType,
+      durationYears: planData.durationYears,
+      monthlyCostCents: planData.monthlyCostCents || 0,
+      yearlyCostCents: planData.yearlyCostCents || 0,
+      deductibleCents: planData.deductibleCents || 0,
+      annualOutOfPocketLimitCents: planData.annualOutOfPocketLimitCents || 0,
+      annualMaxBenefitCents: planData.annualMaxBenefitCents || 0,
+      description: planData.description || null,
+      isActive: planData.isActive ?? true,
+      createdAt: new Date(),
+      updatedAt: new Date(),
+    } as InsurancePlan;
+
+    await addOptimisticPlan(optimistic, async () => {
+      const result = await getPlansAction({ isActive: true }, { limit: 6 });
+      if (result.success && result.data?.plans) {
+        setData((prev) => ({ ...prev, plans: result.data!.plans }));
+        return { success: true, data: planData } as {
+          success: boolean;
+          data: InsurancePlan;
+          errors?: Array<{ field?: string; message: string }>;
+        };
+      }
+      return {
+        success: false,
+        errors: [{ message: "Failed to refresh data" }],
+      } as {
+        success: boolean;
+        errors?: Array<{ field?: string; message: string }>;
+      };
+    });
   };
 
   if (isInitialLoading) {
@@ -223,8 +276,14 @@ export function DashboardContent() {
 
         <PlanCard
           plans={optimisticData.plans}
-          onAddNew={handleAddPlan}
           isLoading={isPending}
+          customAddButton={
+            <AddPlanDialog
+              onSuccess={handleAddPlan}
+              hospitals={optimisticData.hospitals}
+              hmos={optimisticData.hmos}
+            />
+          }
         />
       </div>
     </div>
